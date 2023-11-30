@@ -1,12 +1,43 @@
-// Create a web server
-const http = require('http');
+// Create web server
+var express = require('express');
+var router = express.Router();
+var mongoose = require('mongoose');
+var Comment = mongoose.model('Comment');
 
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello, World!');
+// Path: /comments
+router.get('/', function(req, res) {
+  Comment.find(function(err, comments){
+    res.json(comments);
+  });
 });
 
-server.listen(3000, 'localhost', () => {
-    console.log('Server running at http://localhost:3000/');
+// Path: /comments
+router.post('/', function(req, res) {
+  var comment = new Comment(req.body);
+  comment.save(function(err, comment){
+    res.json(comment);
+  });
 });
+
+// Path: /comments/:id
+router.get('/:id', function(req, res) {
+  Comment.findById(req.params.id, function(err, comment){
+    res.json(comment);
+  });
+});
+
+// Path: /comments/:id
+router.put('/:id', function(req, res) {
+  Comment.findByIdAndUpdate(req.params.id, req.body, function(err, comment){
+    res.json(comment);
+  });
+});
+
+// Path: /comments/:id
+router.delete('/:id', function(req, res) {
+  Comment.findByIdAndRemove(req.params.id, function(err, comment){
+    res.json(comment);
+  });
+});
+
+module.exports = router;
